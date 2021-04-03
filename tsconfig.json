@@ -1,7 +1,16 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "module": "commonjs",
-    "sourceMap": true
-  }
+    "module": "ESNext",
+    "sourceMap": true,
+    "noImplicitAny": true,
+    "removeComments": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "build"
+  },
+  "include": ["lib/**/*"],
+  "exclude": ["node_modules", "**/*.spec.ts"]
 }
