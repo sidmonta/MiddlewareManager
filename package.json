@@ -1,0 +1,25 @@
+{
+  "name": "middleware-manager",
+  "version": "0.1.0",
+  "description": "Utility lib for pipe all the things",
+  "main": "build/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc index.ts"
+  },
+  "keywords": [
+    "pipe",
+    "middleware",
+    "typescript"
+  ],
+  "author": "Sidmonta <sidmonta.15@gmail.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^4.2.3"
+  },
+  "prettier": {
+    "tabWidth": 2,
+    "useTabs": false,
+    "semi": false
+  }
+}
