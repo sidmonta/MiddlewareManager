@@ -1,4 +1,4 @@
-import * as P from "./lib/index"
+const P = require("./lib")
 
 const deps = {
   logger: {
@@ -10,25 +10,31 @@ const deps = {
 
 const pipe = P.pipe(deps)
 
-const testMiddleware: Middleware<typeof deps, number, number> = ({
-  logger,
-}) => (num) => {
+const testMiddleware = ({ logger }) => (num) => {
   const i = num * 10
   logger.info(i)
   return i
 }
 
-const testMiddleware2: Middleware<typeof deps, string, number> = ({
-  logger,
-}) => (num) => {
+const testMiddleware2 = ({ logger }) => (num) => {
   const i = num + "maionese"
   logger.info(i)
-  return 1000
+  return i
 }
 
 async function run() {
   const res = await pipe(10, testMiddleware, testMiddleware2)
-  return res
+
+  const merged = await P.merge(
+    pipe(10, testMiddleware),
+    pipe("panino", testMiddleware2)
+  )
+
+  const functions = P.flow(testMiddleware, testMiddleware2)
+
+  const ss = functions(deps)
+
+  console.log(res, merged, await ss(10))
 }
 
 run().then(console.log).catch(console.error)
