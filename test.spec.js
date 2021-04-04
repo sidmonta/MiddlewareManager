@@ -1,4 +1,4 @@
-const P = require("./lib")
+const P = require("./build/bundle.js")
 
 const deps = {
   logger: {

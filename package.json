@@ -2,9 +2,11 @@
   "name": "middleware-manager",
   "version": "0.1.0",
   "description": "Utility lib for pipe all the things",
-  "main": "lib/index.js",
+  "main": "build/bundle.js",
+  "module": "build/bundle.es.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rollup -c"
   },
   "keywords": [
     "pipe",
@@ -16,5 +18,15 @@
     "tabWidth": 2,
     "useTabs": false,
     "semi": false
+  },
+  "devDependencies": {
+    "@babel/core": "^7.13.14",
+    "@babel/plugin-transform-runtime": "^7.13.10",
+    "@babel/preset-env": "^7.13.12",
+    "@rollup/plugin-babel": "^5.3.0",
+    "@rollup/plugin-node-resolve": "^11.2.1",
+    "rollup": "^2.44.0",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-terser": "^7.0.2"
   }
 }
