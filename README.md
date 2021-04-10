@@ -4,6 +4,8 @@
 - Small package (4kb - 674b gzip)
 - Use in node and browser
 
+Library that facilitate pipe operator for manage middleware.
+
 A **middleware** is a function in this form:
 
 ```js
@@ -479,25 +481,25 @@ console.log(result) // 8
 
 const result = await PM.pipe(deps)(
   0,
-  middleware1,
-  middleware2,
+  middleware1, // 1
+  middleware2, // 3
   PM.tryCatch(
-    PM.pipeAsMiddleware(middleware1, middleware3),
+    PM.pipeAsMiddleware(middleware1, middleware3), // 4 - true
     commonMiddleware.throwError("Error on insert in db")
   ),
   PM.when(
     (value) => value === false,
     commonMiddleware.throwError("Error on insert in db")
   ),
-  PM.ask(2),
-  middleware2,
-  PM.loop((, index) => index < 100, middleware1)
+  PM.ask(2), // 3
+  middleware2, // 5
+  PM.loop((, index) => index < 100, middleware1) // 105
   PM.ifElse(
     (value) => value > 100,
     PM.pipeAsMiddleware(
-      middleware1,
-      middleware1,
-      middleware1
+      middleware1, // 106
+      middleware1, // 107
+      middleware1 // 108
     ),
     PM.pipeAsMiddleware(
       middleware2,
@@ -506,15 +508,15 @@ const result = await PM.pipe(deps)(
   ),
   PM.concurrency(
     PM.pipeAsMiddleware(
-      middleware1,
-      middleware3,
+      middleware1, // 109
+      middleware3, // true
       when(value => !value, commonMiddleware.stop())
     ),
     PM.pipeAsMiddleware(
-      middleware2,
-      middleware3,
+      middleware2, // 110
+      middleware3, // true
       when(value => !value, commonMiddleware.stop())
     )
-  )
+  ) // [true, true]
 )
 ```
