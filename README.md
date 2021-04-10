@@ -291,3 +291,230 @@ where:
 ---
 
 ### Examples
+
+```js
+import * as PM from "pipe-manager"
+
+const { commonMiddleware } = PM
+
+/*
+ Basic usage
+ */
+const middleware1 = PM.asMiddleware((value) => value + 1)
+const middleware2 = PM.asMiddleware((value) => value + 2)
+
+const result = await PM.pipe()(0, middleware1, middleware2)
+
+console.log(result) // 3
+
+/*
+ With deps
+ */
+
+const deps = {
+  db: { insert: async () => {}, delete: async () => {} },
+  logger: console,
+}
+
+const middleware3 = (deps) => {
+  const { db, logger } = deps
+
+  return async (value) => {
+    logger.info(`Insert in db: ${value}`)
+    return await db.insert(value)
+  }
+}
+
+const pipeWithDeps = PM.pipe(deps)
+
+const result = await pipeWithDeps(0, middleware1, middleware2, middleware3)
+
+console.log(result) // true|false
+
+/*
+ When
+ */
+
+const result = await PM.pipe(deps)(
+  0,
+  middleware1, // 1
+  middleware2, // 3
+  PM.when((value) => value > 3, middleware3),
+  middleware1
+)
+
+console.log(result) // 4
+
+const result = await PM.pipe(deps)(
+  1,
+  middleware1, // 2
+  middleware2, // 4
+  PM.when((value) => value > 3, middleware3),
+  middleware1
+)
+
+console.log(result) // 5
+
+/*
+ tryCatch
+ */
+
+const result = await PM.pipe(deps)(
+  0,
+  middleware1, // 1
+  middleware2, // 3
+  PM.tryCatch(middleware3, middleware2),
+  middleware1
+)
+console.log(result)
+// If db insert throw error -> 6
+// Else -> 4
+
+/*
+ loop
+ */
+
+const result = await PM.pipe(deps)(
+  0,
+  middleware1, // 1
+  middleware2, // 3
+  PM.loop((value) => value < 5, middleware1), // middleware1 is execute 2 time
+  middleware1
+)
+console.log(result) // 6
+
+const result = await PM.pipe(deps)(
+  0,
+  middleware1, // 1
+  middleware2, // 3
+  PM.loop((value, index) => index < 100, middleware1), // middleware1 is execute 100 time
+  middleware1
+)
+console.log(result) // 104
+
+/*
+ ifElse
+ */
+const result = await PM.pipe(deps)(
+  1,
+  middleware1, // 2
+  middleware2, // 4
+  PM.ifElse((value) => value > 3, middleware1, middleware2),
+  middleware1
+)
+
+console.log(result) // 6
+
+const result = await PM.pipe(deps)(
+  0,
+  middleware1, // 1
+  middleware2, // 3
+  PM.ifElse((value) => value > 3, middleware1, middleware2),
+  middleware1
+)
+
+console.log(result) // 6
+
+/*
+ concurrency
+ */
+
+const result = await PM.pipe(deps)(
+  0,
+  middleware1, // 1
+  middleware2, // 3
+  PM.concurrency(
+    middleware1, // 4
+    middleware2, // 5
+    middleware1, // 4
+    middleware2, // 5
+    middleware1, // 4
+    middleware2 // 5
+  )
+)
+
+console.log(result) // [4,5,4,5,4,5]
+
+/*
+ ask
+ */
+const result = await PM.pipe(deps)(
+  /*0*/ 0,
+  /*1*/ middleware1, // 1
+  /*2*/ middleware2, // 3
+  /*3*/ PM.ask(1),
+  /*4*/ middleware1
+)
+
+console.log(result) // 2
+
+const result = await PM.pipe(deps)(
+  /*1*/ 0,
+  /*2*/ middleware1, // 1
+  /*3*/ middleware2, // 3
+  /*4*/ PM.ask(5), // <- undefined
+  /*5*/ middleware1
+)
+
+console.log(result) // NaN
+
+/*
+ pipeAsMiddleware
+ */
+const result = await PM.pipe(deps)(
+  0,
+  middleware1, // 1
+  middleware2, // 3
+  PM.pipeAsMiddleware(
+    middleware2, // 5
+    middleware2 // 7
+  ),
+  middleware1
+)
+console.log(result) // 8
+
+/*
+ Complete example
+ */
+
+const result = await PM.pipe(deps)(
+  0,
+  middleware1,
+  middleware2,
+  PM.tryCatch(
+    PM.pipeAsMiddleware(middleware1, middleware3),
+    commonMiddleware.throwError("Error on insert in db")
+  ),
+  PM.when(
+    (value) => value === false,
+    commonMiddleware.throwError("Error on insert in db")
+  ),
+  PM.ask(2),
+  middleware2,
+  PM.loop((, index) => index < 100, middleware1)
+  PM.ifElse(
+    (value) => value > 100,
+    PM.pipeAsMiddleware(
+      middleware1,
+      middleware1,
+      middleware1
+    ),
+    PM.pipeAsMiddleware(
+      middleware2,
+      middleware2
+    )
+  ),
+  PM.concurrency(
+    PM.pipeAsMiddleware(
+      middleware1,
+      middleware3,
+      when(value => !value, commonMiddleware.stop())
+    ),
+    PM.pipeAsMiddleware(
+      middleware2,
+      middleware3,
+      when(value => !value, commonMiddleware.stop())
+    )
+  )
+)
+```
