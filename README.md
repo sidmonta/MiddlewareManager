@@ -1,4 +1,4 @@
-# Middleware Manager
+# Pipe Middleware Manager
 
 - Zero dependency
 - Small package (4kb - 674b gzip)

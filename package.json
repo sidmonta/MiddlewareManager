@@ -1,5 +1,5 @@
 {
-  "name": "middleware-manager",
+  "name": "pipe-middleware-manager",
   "version": "0.1.0",
   "description": "Utility lib for pipe all the things",
   "main": "build/bundle.js",
