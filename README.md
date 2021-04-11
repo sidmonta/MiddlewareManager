@@ -6,6 +6,12 @@
 
 Library that facilitate pipe operator for manage middleware.
 
+## Install
+
+```bash
+npm i pipe-middleware-manager
+```
+
 A **middleware** is a function in this form:
 
 ```js

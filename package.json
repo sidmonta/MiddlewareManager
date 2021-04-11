@@ -12,6 +12,10 @@
     "pipe",
     "middleware"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sidmonta/PipeMiddlewareManager.git"
+  },
   "author": "Sidmonta <sidmonta.15@gmail.com>",
   "license": "ISC",
   "prettier": {
