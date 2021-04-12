@@ -1,7 +1,7 @@
 # Pipe Middleware Manager
 
 - Zero dependency
-- Small package (4kb - 674b gzip)
+- Small package (1.4kb - 674b gzip)
 - Use in node and browser
 
 Library that facilitate pipe operator for manage middleware.
@@ -89,6 +89,24 @@ where:
   const result = await pipe(
     ...
     loop(
+      (value, index, queue) => Boolean(value),
+      middleware
+    ),
+    ...
+  )
+
+  ```
+
+  The `index` identify the number of iterator of middleware. It can be use for simulate for-loop
+
+- **doLoop(condition, middleware)**:
+
+  Execute the middleware as long as the condition function return `true`. It use a do-while loop.
+
+  ```js
+  const result = await pipe(
+    ...
+    doLoop(
       (value, index, queue) => Boolean(value),
       middleware
     ),
